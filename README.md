@@ -69,6 +69,7 @@ We run the **same DEG (Differential Gene Expression) analysis script** in two di
 
 ```bash
 docker pull sleung124/docker-workshop-deg-old
+docker tag sleung124/docker-workshop-deg-old docker-workshop-deg-old
 ```
 
 ### Mac/Linux Terminal
@@ -101,6 +102,7 @@ MSYS_NO_PATHCONV=1 docker run --rm \
 
 ```bash
 docker pull sleung124/docker-workshop-deg-new
+docker tag sleung124/docker-workshop-deg-new docker-workshop-deg-new
 ```
 
 ### Mac/Linux Terminal
@@ -132,15 +134,14 @@ MSYS_NO_PATHCONV=1 docker run --rm \
 
 ```bash
 docker pull sleung124/docker-workshop-deg-rstudio
+docker tag sleung124/docker-workshop-deg-rstudio docker-workshop-deg-rstudio
 ```
 
 ### RStudio Terminal (Git Bash / MINGW64)
 
 ```bash
-docker run --rm -p 8787:8787 -v $(pwd):/home/rstudio/analysis -v $(pwd)/output/rstudio:/home/rstudio/analysis/output
--e PASSWORD=demo --name docker-workshop-rstudio docker-workshop-rstudio
+docker run --rm -p 8787:8787 -v ${PWD}:/home/rstudio/analysis -v ${PWD}/output/rstudio:/home/rstudio/analysis/output -e PASSWORD=demo --name docker-workshop-rstudio docker-workshop-rstudio
 ```
-
 
 ### Automated Demo Script 
 
