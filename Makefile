@@ -49,14 +49,14 @@ run-new: build-new ## Run analysis with NEW environment (R 4.3.2)
 rstudio: ## Start RStudio Server at http://localhost:8787
 	@mkdir -p output/rstudio
 	docker build -f dockerfiles/Dockerfile.rstudio -t deg-analysis-rstudio .
-	docker run -d \
+	docker run \
 		-p 8787:8787 \
 		-v $$(pwd):/home/rstudio/analysis \
 		-v $$(pwd)/output/rstudio:/home/rstudio/analysis/output \
-		-e PASSWORD=deseq2demo \
-		--name deg-analysis-rstudio \
-		deg-analysis-rstudio
-	@echo "RStudio running at http://localhost:8787 (user: rstudio, password: deseq2demo)"
+		-e PASSWORD=demo \
+		--name docker-workshop-rstudio \
+		docker-workshop-rstudio
+	@echo "RStudio running at http://localhost:8787 (user: rstudio, password: demo)"
 
 
 # Clean up containers and outputs

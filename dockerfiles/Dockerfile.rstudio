@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y \
 RUN R -e "install.packages('BiocManager', repos='http://cran.rstudio.com/')" && \
     R -e "BiocManager::install(version = '3.18', ask = FALSE)"
 
-# Install DESeq2 and additional useful packages
-RUN R -e "BiocManager::install(c('DESeq2', 'SummarizedExperiment', 'apeglm', 'pheatmap', 'EnhancedVolcano'), ask = FALSE)"
+# Install modern edgeR version 4.0+ with QL methods
+RUN R -e "BiocManager::install('edgeR', ask = FALSE)"
 
 # Install helpful CRAN packages for interactive analysis
 RUN R -e "install.packages(c('tidyverse', 'ggplot2', 'plotly', 'DT', 'rmarkdown', 'knitr'), repos='http://cran.rstudio.com/')"
@@ -35,11 +35,6 @@ RUN R -e "install.packages(c('tidyverse', 'ggplot2', 'plotly', 'DT', 'rmarkdown'
 # Create analysis directory and set permissions
 RUN mkdir -p /home/rstudio/analysis && \
     chown -R rstudio:rstudio /home/rstudio/analysis
-
-# Copy analysis files (these will be mounted as volume in practice)
-COPY --chown=rstudio:rstudio bin/R/deg_analysis.R /home/rstudio/analysis/
-COPY --chown=rstudio:rstudio inputs/count_data.csv /home/rstudio/analysis/
-COPY --chown=rstudio:rstudio inputs/sample_info.csv /home/rstudio/analysis/
 
 # Expose RStudio Server port
 EXPOSE 8787

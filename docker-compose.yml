@@ -30,14 +30,14 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile.rstudio
-    container_name: deg-analysis-rstudio
+    container_name: docker-workshop-rstudio
     ports:
       - "8787:8787"
     volumes:
       - ./:/home/rstudio/analysis
       - ./output/rstudio:/home/rstudio/analysis/output
     environment:
-      - PASSWORD=deseq2demo
+      - PASSWORD=demo
       - ROOT=TRUE
     restart: unless-stopped
 

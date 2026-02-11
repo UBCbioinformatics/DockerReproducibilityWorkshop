@@ -113,7 +113,17 @@ MSYS_NO_PATHCONV=1 docker run --rm \
   sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
 ```
 
-### Option 1: Automated Demo Script (Recommended)
+## Starting RStudio instance
+
+### RStudio Terminal (Git Bash / MINGW64)
+
+```bash
+docker run --rm -p 8787:8787 -v $(pwd):/home/rstudio/analysis -v $(pwd)/output/rstudio:/home/rstudio/analysis/output
+-e PASSWORD=demo --name docker-workshop-rstudio docker-workshop-rstudio
+```
+
+
+### Automated Demo Script 
 
 ```bash
 chmod +x bin/shell/run_demo.sh
@@ -126,18 +136,3 @@ This will:
 3. Save results to `output/old_docker/` and `output/new_docker/`
 4. Display version information for comparison
 
-### Option 2: Interactive Development with RStudio
-
-For hands-on exploration and development:
-
-```bash
-# Start RStudio Server (if available in bin/shell/)
-./bin/shell/rstudio.sh start
-
-# Or using docker-compose directly
-docker-compose up -d rstudio
-```
-
-Then open your browser to **http://localhost:8787**
-- **Username:** rstudio
-- **Password:** deseq2demo
