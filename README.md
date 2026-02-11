@@ -18,23 +18,22 @@ Bioinformatics analyses are notoriously sensitive to software versions. A script
 We run the **same DEG (Differential Gene Expression) analysis script** in two different Docker containers:
 
 ### Container 1: OLD Environment ❌
-- **R version:** 4.0.5
-- **Bioconductor:** 3.12
-- **DESeq2:** Older version from 2021
-- **Result:** May show deprecated warnings, different numerical results, or even fail
+- **R version:** 3.6.3
+- **edgeR version** 3.28.1
 
 ### Container 2: NEW Environment ✅
 - **R version:** 4.3.2
-- **Bioconductor:** 3.18
-- **DESeq2:** Current version with bug fixes
-- **Result:** Runs smoothly with improved algorithms
+- **edgeR version** 4.0.16
+
+### Expected behavour:
+- How DEGs are defined between the two versions are different, therefore we expect to see different results between these two files, even if the same code is ran
 
 ## Project Structure
 
 ```
 .
 ├── dockerfiles/             # Docker environment definitions
-│   ├── Dockerfile.old       # Older R 4.0.5 + Bioconductor 3.12
+│   ├── Dockerfile.old       # Older R 3.6.3+ Bioconductor 3.12
 │   ├── Dockerfile.new       # Newer R 4.3.2 + Bioconductor 3.18
 │   └── Dockerfile.rstudio   # RStudio Server with R 4.3.2 + Bioc 3.18
 ├── bin/                     # Scripts and executables
@@ -46,7 +45,7 @@ We run the **same DEG (Differential Gene Expression) analysis script** in two di
 ├── inputs/                  # Input data files
 │   ├── count_data.csv       # Sample gene expression counts
 │   └── sample_info.csv      # Sample metadata
-├── output/                  # Analysis outputs (created at runtime)
+├── output/                  # Analysis outputs 
 │   ├── old_docker/          # Results from old environment
 │   └── new_docker/          # Results from new environment
 ├── docker-compose.yml       # Orchestrate all containers
@@ -142,5 +141,3 @@ docker-compose up -d rstudio
 Then open your browser to **http://localhost:8787**
 - **Username:** rstudio
 - **Password:** deseq2demo
-
-
