@@ -1,0 +1,53 @@
+# Dockerfile for RStudio Server with R 4.3.2 + Bioconductor 3.18
+# This provides an interactive development environment
+# Access via web browser at http://localhost:8787
+
+FROM rocker/rstudio:4.3.2
+
+# Set working directory
+WORKDIR /home/rstudio/analysis
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libz-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bioconductor 3.18
+RUN R -e "install.packages('BiocManager', repos='http://cran.rstudio.com/')" && \
+    R -e "BiocManager::install(version = '3.18', ask = FALSE)"
+
+# Install DESeq2 and additional useful packages
+RUN R -e "BiocManager::install(c('DESeq2', 'SummarizedExperiment', 'apeglm', 'pheatmap', 'EnhancedVolcano'), ask = FALSE)"
+
+# Install helpful CRAN packages for interactive analysis
+RUN R -e "install.packages(c('tidyverse', 'ggplot2', 'plotly', 'DT', 'rmarkdown', 'knitr'), repos='http://cran.rstudio.com/')"
+
+# Create analysis directory and set permissions
+RUN mkdir -p /home/rstudio/analysis && \
+    chown -R rstudio:rstudio /home/rstudio/analysis
+
+# Copy analysis files (these will be mounted as volume in practice)
+COPY --chown=rstudio:rstudio bin/R/deg_analysis.R /home/rstudio/analysis/
+COPY --chown=rstudio:rstudio inputs/count_data.csv /home/rstudio/analysis/
+COPY --chown=rstudio:rstudio inputs/sample_info.csv /home/rstudio/analysis/
+
+# Expose RStudio Server port
+EXPOSE 8787
+
+# RStudio runs as user 'rstudio' with password 'rstudio' by default
+# You can override with environment variables:
+# -e PASSWORD=yourpassword
+# -e USER=yourusername
+
+# Default command starts RStudio Server
+CMD ["/init"]

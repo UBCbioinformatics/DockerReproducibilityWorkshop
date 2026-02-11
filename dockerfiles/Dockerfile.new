@@ -1,0 +1,45 @@
+# Dockerfile for NEWER R/Bioconductor Environment
+# R 4.3.2 with Bioconductor 3.18 and edgeR 4.0+ (2023)
+# This version has major improvements:
+# - Quasi-likelihood (QL) F-test (more accurate)
+# - Improved robust dispersion estimation
+# - Better handling of low counts
+# - Enhanced normalization methods
+
+FROM rocker/r-ver:4.3.2
+
+# Set working directory
+WORKDIR /analysis
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libz-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Bioconductor 3.18
+RUN R -e "install.packages('BiocManager', repos='http://cran.rstudio.com/')" && \
+    R -e "BiocManager::install(version = '3.18', ask = FALSE)"
+
+# Install modern edgeR version 4.0+ with QL methods
+RUN R -e "BiocManager::install('edgeR', ask = FALSE)"
+
+# Copy analysis files
+COPY bin/R/deg_analysis.R /home/analysis/
+COPY inputs/count_data.csv /home/analysis/
+COPY inputs/sample_info.csv /home/analysis/
+
+# Make the script executable
+RUN chmod +x /home/analysis/deg_analysis.R
+
+# Set the command to run the analysis
+CMD ["Rscript", "/home/analysis/deg_analysis.R"]

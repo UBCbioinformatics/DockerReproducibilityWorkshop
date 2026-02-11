@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Old R/Bioconductor environment
+  deg-old:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.old
+    container_name: deg-analysis-old
+    volumes:
+      - ./output/old_docker:/analysis/output
+      - ./inputs:/analysis/inputs
+      - ./bin/R:/analysis/bin/R
+    command: sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+  
+  # New R/Bioconductor environment
+  deg-new:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.new
+    container_name: deg-analysis-new
+    volumes:
+      - ./output/new_docker:/analysis/output
+      - ./inputs:/analysis/inputs
+      - ./bin/R:/analysis/bin/R
+    command: sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+  
+  # RStudio Server for interactive development
+  rstudio:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.rstudio
+    container_name: deg-analysis-rstudio
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./:/home/rstudio/analysis
+      - ./output/rstudio:/home/rstudio/analysis/output
+    environment:
+      - PASSWORD=deseq2demo
+      - ROOT=TRUE
+    restart: unless-stopped
+
+# To run both analyses:
+# docker-compose up --build deg-old deg-new
+#
+# To run just the old environment:
+# docker-compose up deg-old
+#
+# To run just the new environment:
+# docker-compose up deg-new
+#
+# To start RStudio Server for interactive development:
+# docker-compose up -d rstudio
+# Then open http://localhost:8787 in your browser
+# Login: rstudio / Password: deseq2demo

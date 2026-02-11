@@ -1,0 +1,146 @@
+# Docker for Version Control: A DEG Analysis Demonstration
+
+## Overview
+
+This project demonstrates the critical importance of Docker for **computational reproducibility** and **version control** in bioinformatics pipelines. It shows how the same analysis script can produce different results (or fail entirely) when run in environments with different R and Bioconductor versions.
+
+## The Problem: Version Dependency in Bioinformatics
+
+Bioinformatics analyses are notoriously sensitive to software versions. A script that works perfectly today might:
+- Fail to run in 6 months due to package updates
+- Produce different results due to algorithm improvements or bug fixes
+- Break due to API changes in dependencies
+
+**This is exactly what Docker solves.**
+
+## What This Demo Shows
+
+We run the **same DEG (Differential Gene Expression) analysis script** in two different Docker containers:
+
+### Container 1: OLD Environment ❌
+- **R version:** 4.0.5
+- **Bioconductor:** 3.12
+- **DESeq2:** Older version from 2021
+- **Result:** May show deprecated warnings, different numerical results, or even fail
+
+### Container 2: NEW Environment ✅
+- **R version:** 4.3.2
+- **Bioconductor:** 3.18
+- **DESeq2:** Current version with bug fixes
+- **Result:** Runs smoothly with improved algorithms
+
+## Project Structure
+
+```
+.
+├── dockerfiles/             # Docker environment definitions
+│   ├── Dockerfile.old       # Older R 4.0.5 + Bioconductor 3.12
+│   ├── Dockerfile.new       # Newer R 4.3.2 + Bioconductor 3.18
+│   └── Dockerfile.rstudio   # RStudio Server with R 4.3.2 + Bioc 3.18
+├── bin/                     # Scripts and executables
+│   ├── R/
+│   │   └── deg_analysis.R   # DEG analysis script (same for both)
+│   └── shell/
+│       ├── run_demo.sh      # Automated demo script
+│       └── compare_results.sh # Results comparison script
+├── inputs/                  # Input data files
+│   ├── count_data.csv       # Sample gene expression counts
+│   └── sample_info.csv      # Sample metadata
+├── output/                  # Analysis outputs (created at runtime)
+│   ├── old_docker/          # Results from old environment
+│   └── new_docker/          # Results from new environment
+├── docker-compose.yml       # Orchestrate all containers
+├── README.md                # This file
+├── DOCKER_REFERENCE.md      # Docker command reference
+
+```
+
+## Prerequisites
+
+- Docker installed ([Get Docker](https://docs.docker.com/get-docker/))
+- Docker Compose (usually included with Docker Desktop)
+- ~2GB free disk space for images
+- 5-10 minutes for initial build
+
+# Docker DEG Analysis Cheatsheet
+
+## Using Dockerfile.old:
+
+### Mac/Linux Terminal
+
+```bash
+docker run --rm -v $(pwd)/output/old_docker:/analysis/output -v $(pwd)/inputs:/analysis/inputs -v $(pwd)/bin/R:/analysis/bin/R docker-workshop-deg-old sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+```
+
+### PowerShell
+
+```powershell
+docker run --rm -v ${PWD}/output/old_docker:/analysis/output -v ${PWD}/inputs:/analysis/inputs -v ${PWD}/bin/R:/analysis/bin/R docker-workshop-deg-old sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+```
+
+### RStudio Terminal (Git Bash / MINGW64)
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "$(pwd -W)/output/old_docker:/analysis/output" \
+  -v "$(pwd -W)/inputs:/analysis/inputs" \
+  -v "$(pwd -W)/bin/R:/analysis/bin/R" \
+  docker-workshop-deg-old \
+  sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+```
+
+
+## Using Dockerfile.new
+### Mac/Linux Terminal
+
+```bash
+docker run --rm -v $(pwd)/output/new_docker:/analysis/output -v $(pwd)/inputs:/analysis/inputs -v $(pwd)/bin/R:/analysis/bin/R docker-workshop-deg-new sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+```
+
+### PowerShell
+
+```powershell
+docker run --rm -v ${PWD}/output/new_docker:/analysis/output -v ${PWD}/inputs:/analysis/inputs -v ${PWD}/bin/R:/analysis/bin/R docker-workshop-deg-new sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+```
+
+### RStudio Terminal (Git Bash / MINGW64)
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "$(pwd -W)/output/new_docker:/analysis/output" \
+  -v "$(pwd -W)/inputs:/analysis/inputs" \
+  -v "$(pwd -W)/bin/R:/analysis/bin/R" \
+  docker-workshop-deg-new \
+  sh -c "Rscript bin/R/deg_analysis.R && cp deg_results.csv ma_plot.png /analysis/output/ 2>/dev/null || true"
+```
+
+### Option 1: Automated Demo Script (Recommended)
+
+```bash
+chmod +x bin/shell/run_demo.sh
+./bin/shell/run_demo.sh
+```
+
+This will:
+1. Build both Docker images
+2. Run the analysis in both environments
+3. Save results to `output/old_docker/` and `output/new_docker/`
+4. Display version information for comparison
+
+### Option 2: Interactive Development with RStudio
+
+For hands-on exploration and development:
+
+```bash
+# Start RStudio Server (if available in bin/shell/)
+./bin/shell/rstudio.sh start
+
+# Or using docker-compose directly
+docker-compose up -d rstudio
+```
+
+Then open your browser to **http://localhost:8787**
+- **Username:** rstudio
+- **Password:** deseq2demo
+
+
