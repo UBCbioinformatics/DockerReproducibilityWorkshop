@@ -65,6 +65,12 @@ We run the **same DEG (Differential Gene Expression) analysis script** in two di
 
 ## Using Dockerfile.old:
 
+### Use Dockerfile.old from Dockerhub:
+
+```bash
+docker pull sleung124/docker-workshop-deg-old
+```
+
 ### Mac/Linux Terminal
 
 ```bash
@@ -90,6 +96,13 @@ MSYS_NO_PATHCONV=1 docker run --rm \
 
 
 ## Using Dockerfile.new
+
+### Use Dockerfile.new from Dockerhub:
+
+```bash
+docker pull sleung124/docker-workshop-deg-new
+```
+
 ### Mac/Linux Terminal
 
 ```bash
@@ -115,6 +128,12 @@ MSYS_NO_PATHCONV=1 docker run --rm \
 
 ## Starting RStudio instance
 
+### Use Dockerfile.rstudio from Dockerhub:
+
+```bash
+docker pull sleung124/docker-workshop-deg-rstudio
+```
+
 ### RStudio Terminal (Git Bash / MINGW64)
 
 ```bash
@@ -135,4 +154,3 @@ This will:
 2. Run the analysis in both environments
 3. Save results to `output/old_docker/` and `output/new_docker/`
 4. Display version information for comparison
-
